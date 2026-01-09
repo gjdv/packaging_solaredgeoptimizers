@@ -46,8 +46,8 @@ class solaredgeoptimizers:
         return SolarEdgeSite(json_obj)
 
     def requestSystemData(self, itemId):
-        url = "https://monitoringpublic.solaredge.com/solaredge-web/p/publicSystemData?reporterId={}&type=panel&activeTab=0&fieldId={}&isPublic=true&locale=en_US".format(
-            itemId, self.siteid
+        url = "https://monitoring.solaredge.com/solaredge-web/p/systemData?reporterId={}&type=panel&activeTab=0&fieldId={}&isPublic=false&v={}".format(
+            itemId, self.siteid, round(time.time() * 1000)
         )
 
         kwargs = {}
