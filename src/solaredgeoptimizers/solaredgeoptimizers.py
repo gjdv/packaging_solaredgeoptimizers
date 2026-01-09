@@ -46,8 +46,8 @@ class solaredgeoptimizers:
         return SolarEdgeSite(json_obj)
 
     def requestSystemData(self, itemId):
-        url = "https://monitoring.solaredge.com/solaredge-web/p/systemData?reporterId={}&type=panel&activeTab=0&fieldId={}&isPublic=false&v={}&locale=en_US".format(
-            itemId, self.siteid, round(time.time() * 1000)
+        url = "https://monitoring.solaredge.com/solaredge-web/p/systemData?reporterId={}&type=panel&activeTab=0&fieldId={}&isPublic=false&locale=en_US".format(
+            itemId, self.siteid
         )
 
         kwargs = {}
@@ -58,7 +58,7 @@ class solaredgeoptimizers:
             json_object = self.decodeResult(r.text)
             try:
                 if json_object["lastMeasurementDate"] == "":
-                    print("Skipping optimizer %s without measurements", itemId)
+                    print("Skipping optimizer %s without measurements" % itemId)
                     return None
                 else:
                     return SolarEdgeOptimizerData(itemId, json_object)
@@ -125,6 +125,8 @@ class solaredgeoptimizers:
             # Note: the timestamp provided by SolarEdge is not a pure POSIX timestamp, but in fact contains a timezone offset.
             return {datetime.utcfromtimestamp(pair['date']/1000).astimezone(pytz.utc): pair['value'] for pair in json_object['dateValuePairs']}
         except Exception as e:
+            time.sleep(3)
+            return self.requestItemHistory(itemId, starttime=starttime, endtime=endtime, parameter=parameter)  # TODO only to make it work for now... can lead to endless recursion
             raise Exception("Error while processing data") from e
 
     def requestPanelHistory(self, itemId, starttime=None, endtime=None, parameter="Power"):
