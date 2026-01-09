@@ -125,8 +125,6 @@ class solaredgeoptimizers:
             # Note: the timestamp provided by SolarEdge is not a pure POSIX timestamp, but in fact contains a timezone offset.
             return {datetime.utcfromtimestamp(pair['date']/1000).astimezone(pytz.utc): pair['value'] for pair in json_object['dateValuePairs']}
         except Exception as e:
-            time.sleep(3)
-            return self.requestItemHistory(itemId, starttime=starttime, endtime=endtime, parameter=parameter)  # TODO only to make it work for now... can lead to endless recursion
             raise Exception("Error while processing data") from e
 
     def requestPanelHistory(self, itemId, starttime=None, endtime=None, parameter="Power"):
