@@ -612,7 +612,7 @@ class SolarEdgeOptimizerData:
             rawdate = json_object["lastMeasurement"]
 
             assert "T" in rawdate
-            self.lastmeasurement = datetime.fromisoformat(rawdate).replace(tzinfo=None)
+            self.lastmeasurement = datetime.fromisoformat(rawdate)
 
             self.model = json_object["model"]
             self.manufacturer = json_object["manufacturer"]
