@@ -374,13 +374,16 @@ class solaredgeoptimizers:
                 "id": item.serialNumber if isinstance(item, SolarlEdgeOptimizer) else
                       item.stringId if isinstance(item, SolarEdgeString) else
                       item.inverterId if isinstance(item, SolarEdgeInverter) else
-                      item.id,
+                      item.id if hasattr(item, "id") else
+                      item,
                 "identifier": item.optimizerId if isinstance(item, SolarlEdgeOptimizer) else
                       item.stringId if isinstance(item, SolarEdgeString) else
                       item.inverterId if isinstance(item, SolarEdgeInverter) else
-                      item.id,
+                      item.id if hasattr(item, "id") else
+                      item,
             },
-            "deviceName": item.name,
+            "deviceName": item.name if hasattr(item, "name") else
+                      item,
             "measurementTypes": [parameter],
         }]
 
@@ -486,12 +489,13 @@ class SolarEdgeSite:
                 # Blijkbaar kan er een powermeter tussen zitten. Checken of dit het geval is
                 # Production Meter -> moeten 1 niveau dieper
                 # Inverter 1 -> dit is 'normaal'
-                if "PRODUCTION METER" not in json_inverter["name"].upper():
+                if "PRODUCTION METER" not in json_inverter["name"].upper() and "subtype" not in json_inverter["properties"]:
                     inverters.append(SolarEdgeInverter(json_obj=json_inverter))
                 else:
-                    for j in range(len(json_inverter["children"])):
-                        #inverters.append(SolarEdgeInverter(json_obj, i, j, True))
-                        inverters.append(SolarEdgeInverter(json_obj=json_inverter["children"][i]))
+                    if json_inverter["isContainChildren"]:
+                        for j in range(len(json_inverter["children"])):
+                            #inverters.append(SolarEdgeInverter(json_obj, i, j, True))
+                            inverters.append(SolarEdgeInverter(json_obj=json_inverter["children"][i]))
 
         return inverters
 
